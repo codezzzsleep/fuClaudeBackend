@@ -5,6 +5,14 @@ English | 中文: `README.md`
 ## Overview
 This is a lightweight backend proxy + Key management admin panel based on the open-source fuclaude. It is an enhanced management version mainly for the "Shihuang" use case and follows ideas from community discussions.
 
+![image-20260202151947128](assets/image-20260202151947128.png)
+
+![image-20260202152212096](assets/image-20260202152212096.png)
+
+![image-20260202152124770](assets/image-20260202152124770.png)
+
+![image-20260202152150308](assets/image-20260202152150308.png)
+
 ## Features
 - Guest / site login
 - Admin panel: user and Key management
@@ -36,7 +44,7 @@ This is a lightweight backend proxy + Key management admin panel based on the op
 - If empty, it defaults to 27 days after creation
 - Expired Keys are hidden on `/choose`
 
-## References
+## References & Acknowledgements
 - fuclaude project: https://github.com/wozulong/fuclaude
 - Community discussion: https://linux.do/t/topic/131611
 - Idea reference: https://linux.do/t/topic/131757
