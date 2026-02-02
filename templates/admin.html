@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>后台管理</title>
+  <style>
+    :root {
+      --bg: #f3f4f6;
+      --panel: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --accent: #2563eb;
+      --accent-soft: rgba(37, 99, 235, 0.12);
+      --border: #e5e7eb;
+      --shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
+      --danger: #ef4444;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Sora", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+    }
+    .sidebar {
+      width: 240px;
+      padding: 24px 18px;
+      background: #ffffff;
+      border-right: 1px solid var(--border);
+    }
+    .brand {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 24px;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      color: var(--text);
+      text-decoration: none;
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    .nav-item.active {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+    .content {
+      flex: 1;
+      padding: 24px;
+    }
+    .panel {
+      background: var(--panel);
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      margin-bottom: 20px;
+    }
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+    .panel-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+    .toolbar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    input[type="text"],
+    input[type="password"],
+    input[type="date"],
+    select {
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      background: #ffffff;
+      font-size: 13px;
+    }
+    .primary {
+      border: none;
+      padding: 8px 14px;
+      border-radius: 10px;
+      background: var(--accent);
+      color: #ffffff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .ghost {
+      border: 1px solid var(--border);
+      background: #ffffff;
+      padding: 6px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .danger {
+      border: none;
+      background: rgba(239, 68, 68, 0.1);
+      color: var(--danger);
+      padding: 6px 10px;
+      border-radius: 10px;
+      cursor: pointer;
+      font-size: 12px;
+    }
+    .table {
+      width: 100%;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 90px 1.3fr 120px 140px 170px 140px 220px;
+      gap: 0;
+      align-items: center;
+      border-bottom: 1px solid var(--border);
+      padding: 10px 12px;
+      font-size: 13px;
+    }
+    .row.header {
+      background: #f9fafb;
+      font-weight: 600;
+      color: var(--muted);
+    }
+    .row:last-child { border-bottom: none; }
+    .row .cell.full {
+      grid-column: 1 / -1;
+      padding-top: 12px;
+    }
+    .status {
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .username {
+      font-weight: 600;
+    }
+    .link {
+      color: var(--accent);
+      font-weight: 600;
+    }
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 10px;
+      background: #f3f4f6;
+      border-radius: 999px;
+      font-size: 12px;
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+    .chip input {
+      margin: 0;
+    }
+    .inline-form {
+      display: inline-flex;
+      gap: 6px;
+      margin-right: 6px;
+    }
+    .keys-form {
+      margin-top: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+    .table-empty {
+      padding: 16px;
+      color: var(--muted);
+    }
+    .key-table .row {
+      grid-template-columns: 160px 120px 1fr 160px 120px;
+    }
+    .mono {
+      font-family: "Fira Mono", "Consolas", monospace;
+    }
+    .expired {
+      color: var(--danger);
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <aside class="sidebar">
+    <div class="brand">管理后台</div>
+    <a class="nav-item active" href="/admin">账号管理</a>
+    <a class="nav-item" href="/admin">系统管理</a>
+  </aside>
+
+  <main class="content">
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">账号管理</div>
+        <div class="toolbar">
+          <form method="POST" action="/admin/users/grant_all" class="inline-form">
+            <button class="ghost" type="submit">全部用户授予全部 Key</button>
+          </form>
+          <form method="POST" action="/admin/keys/default" class="inline-form">
+            <select name="default_key_id">
+              {{DEFAULT_KEY_OPTIONS}}
+            </select>
+            <button class="ghost" type="submit">默认 Key</button>
+          </form>
+          <a class="ghost" href="/admin/logout">退出</a>
+        </div>
+      </div>
+
+      <form class="toolbar" method="POST" action="/admin/users/create">
+        <input type="text" name="username" placeholder="用户名" required>
+        <label class="chip"><input type="checkbox" name="active" checked> 启用</label>
+        <label class="chip"><input type="checkbox" name="isolated" checked> 独立会话</label>
+        <input type="date" name="expires_at" placeholder="过期日期">
+        <div class="chips">
+          <label class="chip select-all"><input type="checkbox" data-select-all> 全选</label>
+          {{KEY_CHECKBOXES}}
+        </div>
+        <button class="primary" type="submit">新增用户</button>
+      </form>
+
+      <div class="table">
+        <div class="row header">
+          <div class="cell">状态</div>
+          <div class="cell">用户</div>
+          <div class="cell">独立会话</div>
+          <div class="cell">Key</div>
+          <div class="cell">最近登录时间</div>
+          <div class="cell">过期日期</div>
+          <div class="cell">操作</div>
+        </div>
+        {{USER_ROWS}}
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <div class="panel-title">Key 管理</div>
+      </div>
+
+      <form class="toolbar" method="POST" action="/admin/keys/create">
+        <input type="text" placeholder="Key ID 自动生成" disabled>
+        <select name="label" required>
+          <option value="free" selected>free</option>
+          <option value="pro">pro</option>
+          <option value="max">max</option>
+        </select>
+        <input type="text" name="value" placeholder="Session Key" required>
+        <input type="text" name="expires_at" id="key-expires-at" placeholder="过期时间 (例如 2026-03-02T05:40:47.962Z)">
+        <button class="primary" type="submit">新增 Key</button>
+      </form>
+
+      <div class="table key-table">
+        <div class="row header">
+          <div class="cell">Key ID</div>
+          <div class="cell">名称</div>
+          <div class="cell">Key</div>
+          <div class="cell">过期时间</div>
+          <div class="cell">操作</div>
+        </div>
+        {{KEY_ROWS}}
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.querySelectorAll(".chips").forEach((container) => {
+      const selectAll = container.querySelector("input[data-select-all]");
+      if (!selectAll) return;
+      const keyBoxes = Array.from(container.querySelectorAll('input[name="keys"]'));
+      const sync = () => {
+        if (keyBoxes.length === 0) {
+          selectAll.checked = false;
+          return;
+        }
+        selectAll.checked = keyBoxes.every((cb) => cb.checked);
+      };
+      selectAll.addEventListener("change", () => {
+        keyBoxes.forEach((cb) => {
+          cb.checked = selectAll.checked;
+        });
+      });
+      keyBoxes.forEach((cb) => cb.addEventListener("change", sync));
+      sync();
+    });
+
+    document.querySelectorAll("[data-toggle]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const form = button.closest("form");
+        if (!form) return;
+        const field = button.dataset.toggle;
+        const input = form.querySelector(`input[name="${field}"]`);
+        if (!input) return;
+        input.value = input.value === "1" ? "0" : "1";
+        form.submit();
+      });
+    });
+
+    const keyExpiresInput = document.getElementById("key-expires-at");
+    if (keyExpiresInput && !keyExpiresInput.value) {
+      const date = new Date();
+      date.setDate(date.getDate() + 27);
+      keyExpiresInput.value = date.toISOString();
+    }
+  </script>
+</body>
+</html>

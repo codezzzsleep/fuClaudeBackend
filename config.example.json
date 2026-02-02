@@ -1,0 +1,16 @@
+{
+  "ORIGINAL_WEBSITE": "http://127.0.0.1:8181",
+  "SESSION_KEYS": [
+    {
+      "id": "free_1",
+      "label": "free",
+      "value": "sk-ant-REPLACE_ME",
+      "expiresAt": "2026-03-02T05:40:47.962Z"
+    }
+  ],
+  "DEFAULT_KEY_ID": "free_1",
+  "SESSION_KEY": "",
+  "SITE_PASSWORD": "change-me",
+  "GUEST_PASSWORD": "change-me",
+  "PORT": 3000
+}

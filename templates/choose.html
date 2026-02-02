@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>请选择账号</title>
+  <style>
+    :root {
+      --bg: #6b6b6b;
+      --panel: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --accent: #10b981;
+      --border: #e5e7eb;
+      --card: #f5f6f8;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Sora", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        linear-gradient(135deg, rgba(0, 0, 0, 0.15), rgba(0, 0, 0, 0.35)),
+        var(--bg);
+      min-height: 100vh;
+      color: var(--text);
+    }
+    .overlay {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .panel {
+      width: min(1100px, 94vw);
+      background: var(--panel);
+      border-radius: 18px;
+      padding: 24px 28px 28px;
+      box-shadow: 0 24px 60px rgba(0, 0, 0, 0.25);
+    }
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .panel-title {
+      font-size: 20px;
+      font-weight: 700;
+    }
+    .panel-subtitle {
+      margin-top: 6px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .close {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: #6b7280;
+      display: grid;
+      place-items: center;
+      text-decoration: none;
+      font-size: 18px;
+      font-weight: 600;
+    }
+    .grid {
+      margin-top: 20px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+      gap: 16px;
+    }
+    .key-card {
+      border: 1px solid var(--border);
+      background: var(--card);
+      border-radius: 14px;
+      padding: 16px;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+    .key-card:hover {
+      border-color: rgba(16, 185, 129, 0.45);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.12);
+      transform: translateY(-2px);
+    }
+    .key-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .badge {
+      padding: 2px 8px;
+      border-radius: 8px;
+      background: rgba(16, 185, 129, 0.12);
+      color: #0f766e;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .key-id {
+      color: #6b7280;
+      font-weight: 600;
+      font-size: 14px;
+    }
+    .key-row {
+      margin-top: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted);
+    }
+    .key-state {
+      color: #111827;
+      font-weight: 600;
+    }
+    .key-bar {
+      margin-top: 10px;
+      height: 6px;
+      background: #e6e6e6;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .key-bar span {
+      display: block;
+      height: 100%;
+      width: var(--fill, 50%);
+      background: linear-gradient(90deg, #10b981, #34d399);
+    }
+    .empty {
+      padding: 20px;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <div class="overlay">
+    <div class="panel">
+      <div class="panel-header">
+        <div>
+          <div class="panel-title">请选择账号</div>
+          <div class="panel-subtitle">点击卡片即可进入</div>
+        </div>
+        <a class="close" href="/">×</a>
+      </div>
+
+      <form class="grid" method="POST" id="keyGrid">
+        {{KEY_CARDS}}
+      </form>
+    </div>
+  </div>
+
+  <script>
+    const grid = document.getElementById("keyGrid");
+    const stateText = {
+      idle: "空闲",
+      busy: "忙碌",
+      limited: "受限"
+    };
+
+    function formatUntil(ts) {
+      if (!ts) return "";
+      const date = new Date(ts);
+      if (Number.isNaN(date.getTime())) return "";
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, "0");
+      const dd = String(date.getDate()).padStart(2, "0");
+      const hh = String(date.getHours()).padStart(2, "0");
+      const mi = String(date.getMinutes()).padStart(2, "0");
+      return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
+    }
+
+    function applyStatus(item) {
+      const card = grid.querySelector(`[data-key-id="${item.key_id}"]`);
+      if (!card) return;
+      const stateEl = card.querySelector(".key-state");
+      const bar = card.querySelector(".key-bar span");
+      const limitedAt = item.rate_limited_until ? formatUntil(item.rate_limited_until) : "";
+      if (stateEl) {
+        if (item.state === "limited" && limitedAt) {
+          stateEl.textContent = `${stateText.limited} 到 ${limitedAt}`;
+        } else {
+          stateEl.textContent = stateText[item.state] || "空闲";
+        }
+      }
+      if (bar) {
+        const width = item.state === "busy" ? "75%" : item.state === "limited" ? "100%" : "35%";
+        bar.style.width = width;
+        if (item.state === "limited") {
+          bar.style.background = "linear-gradient(90deg, #ef4444, #f97316)";
+        } else if (item.state === "busy") {
+          bar.style.background = "linear-gradient(90deg, #f59e0b, #fbbf24)";
+        } else {
+          bar.style.background = "linear-gradient(90deg, #10b981, #34d399)";
+        }
+      }
+    }
+
+    async function refreshStatus() {
+      try {
+        const resp = await fetch("/status", { cache: "no-store" });
+        if (!resp.ok) return;
+        const data = await resp.json();
+        if (!data || !Array.isArray(data.status)) return;
+        data.status.forEach(applyStatus);
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    refreshStatus();
+    setInterval(refreshStatus, 10000);
+  </script>
+</body>
+</html>

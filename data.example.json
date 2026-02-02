@@ -1,0 +1,12 @@
+{
+  "keys": [
+    {
+      "id": "free_1",
+      "label": "free",
+      "value": "sk-ant-REPLACE_ME",
+      "expiresAt": "2026-03-02T05:40:47.962Z"
+    }
+  ],
+  "defaultKeyId": "free_1",
+  "users": []
+}

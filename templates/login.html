@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>欢迎回来</title>
+  <style>
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --text: #111827;
+      --muted: #6b7280;
+      --accent: #0ea371;
+      --accent-dark: #0a8a60;
+      --border: #e5e7eb;
+      --input: #f9fafb;
+      --shadow: 0 24px 60px rgba(15, 23, 42, 0.12);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Sora", "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+      background:
+        radial-gradient(circle at 20% 20%, rgba(14, 163, 113, 0.08), transparent 55%),
+        radial-gradient(circle at 80% 0%, rgba(56, 189, 248, 0.08), transparent 45%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .card {
+      width: min(460px, 92vw);
+      background: var(--card);
+      border-radius: 24px;
+      padding: 32px 34px;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+    .logo {
+      width: 64px;
+      height: 64px;
+      margin: 4px auto 18px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #0ea371, #34d399);
+      color: #ffffff;
+      display: grid;
+      place-items: center;
+      font-size: 28px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+    .subtitle {
+      margin: 0 0 24px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+    .mode-switch {
+      margin-top: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    .mode-switch button {
+      border: none;
+      background: transparent;
+      color: var(--accent);
+      cursor: pointer;
+      font-weight: 600;
+      padding: 0;
+    }
+    .form-group {
+      text-align: left;
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 13px;
+      color: var(--muted);
+    }
+    input[type="text"],
+    input[type="password"] {
+      width: 100%;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--input);
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    }
+    input:focus {
+      border-color: rgba(14, 163, 113, 0.7);
+      box-shadow: 0 0 0 3px rgba(14, 163, 113, 0.12);
+    }
+    .password-wrap {
+      position: relative;
+    }
+    .toggle-btn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      border: none;
+      background: transparent;
+      cursor: pointer;
+      color: #9ca3af;
+      font-size: 14px;
+    }
+    .primary {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      background: var(--accent);
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: background 0.2s ease, transform 0.2s ease;
+    }
+    .primary:hover {
+      background: var(--accent-dark);
+      transform: translateY(-1px);
+    }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="logo">F</div>
+    <h1>欢迎回来</h1>
+    <p class="subtitle" id="modeTitle">访客登录</p>
+
+    <form method="POST" id="guestForm">
+      <input type="hidden" name="login_type" value="guest">
+      <div class="form-group">
+        <label for="guest_username">用户名</label>
+        <input type="text" id="guest_username" name="username" placeholder="请输入用户名" autocomplete="username" required>
+      </div>
+      <div class="form-group">
+        <label for="guest_password">访客密码</label>
+        <div class="password-wrap">
+          <input type="password" id="guest_password" name="guest_password" placeholder="请输入访客密码" autocomplete="current-password" required>
+          <button class="toggle-btn" type="button" data-target="guest_password">显示</button>
+        </div>
+      </div>
+      <button class="primary" type="submit">登录</button>
+      <div class="mode-switch">站点管理？<button type="button" id="switchToSite">站点登录</button></div>
+    </form>
+
+    <form method="POST" id="siteForm" class="hidden">
+      <input type="hidden" name="login_type" value="site">
+      <div class="form-group">
+        <label for="site_password">站点密码</label>
+        <div class="password-wrap">
+          <input type="password" id="site_password" name="site_password" placeholder="请输入站点密码" autocomplete="current-password" required>
+          <button class="toggle-btn" type="button" data-target="site_password">显示</button>
+        </div>
+      </div>
+      <button class="primary" type="submit">登录</button>
+      <div class="mode-switch">返回访客登录？<button type="button" id="switchToGuest">访客登录</button></div>
+    </form>
+  </div>
+
+  <script>
+    const guestForm = document.getElementById("guestForm");
+    const siteForm = document.getElementById("siteForm");
+    const modeTitle = document.getElementById("modeTitle");
+    const switchToSite = document.getElementById("switchToSite");
+    const switchToGuest = document.getElementById("switchToGuest");
+
+    switchToSite.addEventListener("click", () => {
+      guestForm.classList.add("hidden");
+      siteForm.classList.remove("hidden");
+      modeTitle.textContent = "站点管理登录";
+    });
+
+    switchToGuest.addEventListener("click", () => {
+      siteForm.classList.add("hidden");
+      guestForm.classList.remove("hidden");
+      modeTitle.textContent = "访客登录";
+    });
+
+    document.querySelectorAll(".toggle-btn").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        const targetId = btn.getAttribute("data-target");
+        const input = document.getElementById(targetId);
+        if (!input) return;
+        const isPassword = input.type === "password";
+        input.type = isPassword ? "text" : "password";
+        btn.textContent = isPassword ? "隐藏" : "显示";
+      });
+    });
+  </script>
+</body>
+</html>
